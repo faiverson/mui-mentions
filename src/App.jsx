@@ -12,9 +12,21 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
+import { red } from '@mui/material/colors';
+
 const darkTheme = createTheme({
+  cssVariables: true,
   palette: {
-      mode: 'dark',
+    mode: 'dark',
+    primary: {
+      main: '#556cd6',
+    },
+    secondary: {
+      main: '#19857b',
+    },
+    error: {
+      main: red.A400,
+    },
   },
 });
 
