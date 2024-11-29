@@ -1,99 +1,65 @@
-
-import { MentionsTextField } from '@jackstenglein/mui-mentions';
 import {
-  Container,
   CssBaseline,
-  FormControlLabel,
-  Stack,
-  Switch,
   ThemeProvider,
-  Typography,
+  StyledEngineProvider,
   createTheme,
 } from '@mui/material';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { red } from '@mui/material/colors';
 
-const darkTheme = createTheme({
-  cssVariables: true,
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#556cd6',
-    },
-    secondary: {
-      main: '#19857b',
-    },
-    error: {
-      main: red.A400,
-    },
-  },
-});
 
-const lightTheme = createTheme();
+import componentsOverride from './overrides';
+import Palette from './palette';
+import CustomShadows from './shadows';
+import Demo from './Demo';
+import DemoCard from './DemoCard';
 
-const defaultValue = 'Hello, @[Kaladin Stormblessed](kaladin)!';
-
-const stormlight = [
-   { id: 'kaladin', display: 'Kaladin Stormblessed' },
-   { id: 'adolin', display: 'Adolin Kholin' },
-   { id: 'shallan', display: 'Shallan Davar' },
-   { id: 'dalinar', display: 'Dalinar Kholin' },
-   { id: 'renarin', display: 'Renarin Kholin' },
-   { id: 'syl', display: 'Syl' },
-   { id: 'teft', display: 'Teft' },
-   { id: 'hoid', display: 'Hoid' },
-   { id: 'moash', display: 'Moash' },
-   { id: 'sadeas', display: 'Torol Sadeas' },
-   { id: 'amaram', display: 'Amaram' },
-   { id: 'nohadon', display: 'Nohadon' },
-];
 const App = () => {
-  const [mode, setMode] = useState('light');
+  const [colorMode] = useState('light');
+  const theme = Palette(colorMode);
+  const themeCustomShadows = useMemo(() => CustomShadows(theme), [theme]);
+  const themeOptions = useMemo(
+    () => ({
+        cssVariables: true,
+        breakpoints: {
+            values: {
+                xs: 0,
+                sm: 768,
+                md: 1024,
+                lg: 1266,
+                xl: 1536,
+            },
+        },
+        direction: 'ltr',
+        mixins: {
+            toolbar: {
+                minHeight: 60,
+                paddingTop: 8,
+                paddingBottom: 8,
+            },
+        },
+        palette: theme.palette,
+        customShadows: themeCustomShadows,
+        zIndex: {
+            notification: 1400,
+            draggable: 5000,
+        },
+    }),
+    [theme, themeCustomShadows],
+);
+
+const themes = createTheme(themeOptions);
+themes.components = componentsOverride(themes);
 
     return (
-      <ThemeProvider theme={mode === 'dark' ? darkTheme : lightTheme}>
+      <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={themes}>
           <CssBaseline />
-          <Container maxWidth="xs" fixed sx={{ py: 15 }}>
-                <Stack spacing={5}>
-                    <Stack spacing={1}>
-                        <Typography variant='h4'>@jackstenglein/mui-mentions demo</Typography>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={mode === 'dark'}
-                                    onChange={(e) => setMode(e.target.checked ? 'dark' : 'light')}
-                                />
-                            }
-                            label='Dark Mode'
-                        />
-                    </Stack>
-                    <Stack spacing={2.5}>
-            <Stack spacing={0.5}>
-                <Typography variant='h5'>Basic TextField</Typography>
-                <Typography>
-                    MentionsTextField supports all three variants of the Mui TextField: outlined (default), filled and
-                    standard.
-                </Typography>
-            </Stack>
+          <Demo />
+          <DemoCard />
 
-            <Stack direction='row' spacing={2}>
-                <MentionsTextField
-                    variant='outlined'
-                    label='Outlined'
-                    fullWidth
-                    defaultValue={defaultValue}
-                    dataSources={[
-                        {
-                            data: stormlight,
-                        },
-                    ]}
-                />
-            </Stack>
-        </Stack>
-            </Stack>
-          </Container>
-      </ThemeProvider>
+            </ThemeProvider>
+        </StyledEngineProvider>
     );
 };
 export default App
